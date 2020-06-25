@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"flat"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":5,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="真正触动我想要系统地学习设计模式，是19年暑期在Google实习时，host指出我的代码没有考虑DI（dependency injection)。 由于之前一直都在学校内，项目上对代码规范要求低，只要实现功能即可。 所以当时现学现用的我，立下一个决心，一定要系统地过一遍设计模式。  尽管一个资深老大哥告诉我，最好的设计模式就是没有设计模式，但是对我这样一个即将步入职场的小菜鸟来说，掌握一些章法在心">
+<meta property="og:type" content="article">
+<meta property="og:title" content="head first design pattern">
+<meta property="og:url" content="http://yoursite.com/2020/01/31/head-first-design-pattern/index.html">
+<meta property="og:site_name" content="A colorful Fish">
+<meta property="og:description" content="真正触动我想要系统地学习设计模式，是19年暑期在Google实习时，host指出我的代码没有考虑DI（dependency injection)。 由于之前一直都在学校内，项目上对代码规范要求低，只要实现功能即可。 所以当时现学现用的我，立下一个决心，一定要系统地过一遍设计模式。  尽管一个资深老大哥告诉我，最好的设计模式就是没有设计模式，但是对我这样一个即将步入职场的小菜鸟来说，掌握一些章法在心">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/behavior_interface.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/behavior_implement.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/beverage.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/decoration.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/decoration_UML.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/class_build.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/class_build2.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/simple_factory.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/abstract_factory.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/adapter_example.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/adapter_example2.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/patterns.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/facade.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/least_friend.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/least_friend2.png">
+<meta property="article:published_time" content="2020-01-31T10:01:45.000Z">
+<meta property="article:modified_time" content="2020-04-27T07:06:17.000Z">
+<meta property="article:author" content="jessie">
+<meta property="article:tag" content="technique">
+<meta property="article:tag" content="book">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/01/31/head-first-design-pattern/behavior_interface.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/01/31/head-first-design-pattern/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>head first design pattern | A colorful Fish</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="A colorful Fish" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">A colorful Fish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录努力生活的每一步</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/shuhanfan/shuhanfan.github.io" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/31/head-first-design-pattern/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="jessie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="A colorful Fish">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          head first design pattern
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-01-31 18:01:45" itemprop="dateCreated datePublished" datetime="2020-01-31T18:01:45+08:00">2020-01-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-04-27 15:06:17" itemprop="dateModified" datetime="2020-04-27T15:06:17+08:00">2020-04-27</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>真正触动我想要系统地学习设计模式，是19年暑期在Google实习时，host指出我的代码没有考虑DI（dependency injection)。 由于之前一直都在学校内，项目上对代码规范要求低，只要实现功能即可。 所以当时现学现用的我，立下一个决心，一定要系统地过一遍设计模式。 </p>
+<p>尽管一个资深老大哥告诉我，最好的设计模式就是没有设计模式，但是对我这样一个即将步入职场的小菜鸟来说，掌握一些章法在心中，还是很有必要的！那么，我们就开始吧~~</p>
+<h1 id="欢迎来到设计模式的世界"><a href="#欢迎来到设计模式的世界" class="headerlink" title="欢迎来到设计模式的世界"></a>欢迎来到设计模式的世界</h1><p>设计模式的本质就是为了使得代码更加易于维护和扩展。</p>
+<h2 id="实际问题"><a href="#实际问题" class="headerlink" title="实际问题"></a>实际问题</h2><p>有一个鸭子的抽象类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Duck:</span><br><span class="line">swim()</span><br><span class="line">display()</span><br></pre></td></tr></table></figure><br>这时候有很多的鸭子，有些鸭子会飞会叫，有些鸭子会飞不会叫，有些鸭子会叫不会飞，如何实现quack()和fly()这两个方法？</p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ol>
+<li><p>用继承<br>把quack()和fly()放如抽象类。<br>No：但是所有继承的子类都要去实现这些方法，包括不会叫和不会飞的。pass</p>
+</li>
+<li><p>定义quackable()和flyable()接口<br>有该功能的对象去实现该接口。<br>No：因为接口没有实现，所以每个子类都要单独实现，单独更改。代码无法复用</p>
+</li>
+<li><p>设计原则<br><strong>找出应用中可能需要变化之处，把它们独立出来，不要和那些不需要变化的代码混在一起</strong>。<br>那么此时，就需要把flyable和quackable独立出来，声明成接口此时称为<strong>FlyBehavior</strong>和<strong>QuackBehavior</strong>。此时要记住另一个设计原则<strong>针对接口编程，而不是针对实现<br>编程</strong>。也就是说，之前对于接口的实现，是直接写在子类的，那么就相当于子类是针对实现编程，每一个实现由于在子类中，都被写得死死的，无法服用，也很难改动。所以一个很好的方法是就<strong>针对接口编程</strong>。另外写类分别实现FlyBehavior和QuackBehavior，称之为<strong>行为类</strong>。 由行为类而不是子类来实现行为接口。</p>
+</li>
+</ol>
+<p>这样的话，鸭子的子类就可以使用接口所表示的行为，实际的实现不会被绑死在鸭子的子类中。如下图：<br><img src="/2020/01/31/head-first-design-pattern/behavior_interface.png" alt="behavior_interface"></p>
+<h2 id="实现鸭子的行为"><a href="#实现鸭子的行为" class="headerlink" title="实现鸭子的行为"></a>实现鸭子的行为</h2><p>不同的行为类去实现同一个接口。</p>
+<p><img src="/2020/01/31/head-first-design-pattern/behavior_implement.png" alt="behavior_implement"></p>
+<p>这样的设计，可以让fly和quack的实现类被其他类复用，比如鸭鸣器，因为这些类已经与鸭子类无关了。<br>同时也可以新增一些行为，既不会影响到既有的行为类，也不会影响鸭子类。</p>
+<p>这样的话，fly和quack行为就是一个接口，可以在运行时变化。那么行为实现类的赋值要在什么时候呢？如果在初始化变量的是偶，就类似面向实现编程。</p>
+<blockquote>
+<p>解决方案：可以添加setFlyBehavior和setQuackBehavior类，动态改变行为。</p>
+</blockquote>
+<h1 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h1><blockquote>
+<p>有趣的事情发生时，可千万别错过了~ 这个模式就是帮咱们的对象知悉情况，不会错过感兴趣的事情。</p>
+</blockquote>
+<h2 id="实际问题-1"><a href="#实际问题-1" class="headerlink" title="实际问题"></a>实际问题</h2><p>WeatherObject可以获取最新的天气数据（温度、湿度、气压）<br>需要建立一个应用，具有三个布告板，实时显示目前的状况、气象统计以及简单的预报。<br>同时可以扩展，公布API好让其他开发者可以开发自己的公告板。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>其实核心问题就是建立一个应用，利用WeatherData对象取得数据，并更新三个布告板。</p>
+<p>最直观的理解，就是既然WeatherData已经实现了getTemperature()，getHumidity()，getPressure()方法，那么只要自己在WeatherData中实现要给measurementsChanged()方法，重新获取数据并且对所有的布告板更新即可。如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeatherData</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">measurementsChanged</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">float</span> temp = getTemperature();</span><br><span class="line">		<span class="keyword">float</span> humidity = getHumidity();</span><br><span class="line">		<span class="keyword">float</span> pressure = getPressure();</span><br><span class="line"></span><br><span class="line">		currentConditionsDisplay.update(temp, humidity, pressure);</span><br><span class="line">	statisticsDisplay.update(temp, humidity, pressure);</span><br><span class="line">	forecastDisplay.update(temp, humidity, pressure);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>但是这个存在很严重的问题是，把对布告板的更新写死在代码里，是面对实现编程，没有扩展性，同时有任何的改动就需要逐一改变布告板。未封装改变的部分。</p>
+<p>这时候就需要用到观察者模式啦~ 让我们来看看到底什么是观察者模式~</p>
+<h2 id="认识观察者模式"><a href="#认识观察者模式" class="headerlink" title="认识观察者模式"></a>认识观察者模式</h2><p>就像是报纸订阅一样。你订阅了某家报纸，只要有新的报纸就会给你送过来，只要取消了，就停止送报。</p>
+<p>而报社的业务就是出版报纸。</p>
+<p>所以 <strong>观察者=出版者+报纸订阅</strong><br>此时，subject=&gt;出版者，observer=&gt;订阅者。</p>
+<blockquote>
+<p>流程： subject管理某些数据，一旦数据发生改变，新的数据会以某种形式送到观察者手上。某个对象可以选择订阅称为观察者，也可以随时取消订阅。</p>
+</blockquote>
+<h2 id="松耦合的威力"><a href="#松耦合的威力" class="headerlink" title="松耦合的威力"></a>松耦合的威力</h2><p>当两个对象之间松耦合，依然可以交互，但是并不清楚彼此之间的细节。</p>
+<p>而观察者模式正式提供了一种对象设计，让subject与observer之间松耦合。</p>
+<p>这也正式符合第三个设计原则：<strong>为了交互对象之间的松耦合设计而努力</strong>。</p>
+<p>因为对于subject而言，唯一依赖的东西是一个对象列表，包含了所有实现observer接口的对象。所以有oberver的该变，只需要通过resgiterObserver()和removeObserver()方法改变对象列表即可。</p>
+<p>所以可以独立地复用subject和observer。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WeatherData.java</span></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeatherData</span> <span class="keyword">implements</span> <span class="title">Subject</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">float</span> temp;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">float</span> humidity;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> ArrayList&lt;Observer&gt; observers = <span class="keyword">new</span> ArrayList&lt;Observer&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setMeasurements</span><span class="params">(<span class="keyword">float</span> temp, <span class="keyword">float</span> humidity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.temp = temp;</span><br><span class="line">        <span class="keyword">this</span>.humidity = humidity;</span><br><span class="line">        <span class="keyword">this</span>.measurementsChanged();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">measurementsChanged</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.notifyObservers(<span class="keyword">this</span>.temp, <span class="keyword">this</span>.humidity);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerObservers</span><span class="params">(Observer observer)</span> </span>&#123;</span><br><span class="line">        observers.add(observer);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeObservers</span><span class="params">(Observer observer)</span> </span>&#123;</span><br><span class="line">        observers.remove(observer);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">notifyObservers</span><span class="params">(<span class="keyword">float</span> temp, <span class="keyword">float</span> humidity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Observer observer: <span class="keyword">this</span>.observers) &#123;</span><br><span class="line">            observer.update(temp, humidity);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//CurrentConditionDisplay.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CurrentConditionDisplay</span> <span class="keyword">implements</span> <span class="title">Observer</span>, <span class="title">Display</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> temp;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> humidity;</span><br><span class="line">    <span class="keyword">private</span> Subject weatherData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CurrentConditionDisplay</span><span class="params">(Subject weatherData)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.weatherData = weatherData;</span><br><span class="line">        weatherData.registerObservers(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">(<span class="keyword">float</span> temp, <span class="keyword">float</span> humi)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.temp = temp;</span><br><span class="line">        <span class="keyword">this</span>.humidity = humidity;</span><br><span class="line">        <span class="keyword">this</span>.display();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">display</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.print(<span class="string">"Current conditions: "</span> + temp</span><br><span class="line">                + <span class="string">"F degrees and "</span> + humidity + <span class="string">"% humidity"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上解法，存在一个问题就是，observer的消息是被动接收，由subject push，但是如果有些obeserver不希望接受这么多消息呢？是否可以observer自己主动get？当然，此法也存在observer每次需要数据都得去pull的麻烦。</p>
+<p>实现的思路：notify只是调用update函数，传的是weatherData整个引用，observer可以自己从weatherData中选取需要的数据。</p>
+<h2 id="可插拔"><a href="#可插拔" class="headerlink" title="可插拔"></a>可插拔</h2><p>可以通过配置文件使得每个组件可“插拔”</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>观察者模式定义了对象之间一对多地关系。</li>
+<li>subject用一个共同地接口来更新观察者。</li>
+<li>subject和observer之间用松耦合地方式结合，彼此不知道互相的细节。</li>
+</ul>
+<h1 id="装饰者模式"><a href="#装饰者模式" class="headerlink" title="装饰者模式"></a>装饰者模式</h1><p>blingbling地装饰对象吧~</p>
+<blockquote>
+<p>讨论继承滥用的问题，以及如何使用对象组合的方式，做到在运行时装饰类。</p>
+</blockquote>
+<h2 id="继承泛滥的问题"><a href="#继承泛滥的问题" class="headerlink" title="继承泛滥的问题"></a>继承泛滥的问题</h2><p>比如starbuck在计划不同品种的饮品价格时，有一个超类beverage提供基础价位，然后每个子类继承它，同时单独计算其他配料的价格，如下图所示：</p>
+<p><img src="/2020/01/31/head-first-design-pattern/beverage.png" alt="beverage UML"><br>存在的问题是：</p>
+<ul>
+<li>如果有一个配料的价格需要修改</li>
+<li>如果需要新添或者减少一个配料</li>
+<li>如果需要新添一个饮品，但是某些配料根本用不上<br>…</li>
+</ul>
+<p>可见，继承很不灵活。继承设计子类的行为，是在编译时候决定的，所有的子类都会继承到相同的行为。然而！如果用<strong>组合</strong>的方式扩展对象的行为，就可以在运行时动态地进行扩展。</p>
+<p>这时候，我们需要遵守地设计原则就是<strong>对扩展开放，对修改关闭</strong></p>
+<blockquote>
+<p>注意：我们无法让设计地每个部分都遵循开放-关闭原则。遵循开放-关闭原则通常会引入新地抽象层次，增加代码复杂度。我们需要把注意力集中在设计中最有可能改变的地方，然后运用开放-关闭原则。</p>
+</blockquote>
+<h2 id="认识装饰者模式"><a href="#认识装饰者模式" class="headerlink" title="认识装饰者模式"></a>认识装饰者模式</h2><p>以上问题可以用装饰者模式来解决，用配料来递归装饰饮料。<br><img src="/2020/01/31/head-first-design-pattern/decoration.png" alt="decoration"></p>
+<blockquote>
+<p>定义：装饰者模式动态地将责任附加到对象上，若要扩展功能，装饰者提供了比继承更有弹性地替代方案。</p>
+</blockquote>
+<p>Java I/O也是装饰者模式的一个体现</p>
+<p>回到饮料的问题，主要的设计思路是，现有一个抽象类beverage，而后抽象装饰类继承beverage，意式浓缩和decaf继承beverage，奶泡、抹茶继承装饰类。之后就可以用奶泡抹茶去装饰意式浓缩和decaf。</p>
+<blockquote>
+<p>注意：装饰者和被装饰者必须是一样的类型，也就是拥有共同的超类。目的是用<strong>继承达到类型匹配</strong>，而不是获得行为。这样才可以通过外嵌得到同样类型的饮料，毕竟espresso加上mocha之后还是饮料。</p>
+</blockquote>
+<p>如下所示：<br><img src="/2020/01/31/head-first-design-pattern/decoration_UML.png" alt="decoration UML"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Beverage</span> </span>&#123;</span><br><span class="line">    String description = <span class="string">"Abstract beverage"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getDescription</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> description;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">double</span> <span class="title">cost</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="comment">//装饰抽象类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">CondimentDecorator</span> <span class="keyword">extends</span> <span class="title">Beverage</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> String <span class="title">getDescription</span><span class="params">()</span></span>; <span class="comment">//所有调料装饰者都必须重新实现getDescription方法</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Espresso</span> <span class="keyword">extends</span> <span class="title">Beverage</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Espresso</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        description = <span class="string">"Espresso"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">cost</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1.99</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StarbucksCoffee</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</span><br><span class="line">        Beverage beverage = <span class="keyword">new</span> Espresso();</span><br><span class="line">        beverage = <span class="keyword">new</span> Mocha(beverage); <span class="comment">//用mocha装饰espresso</span></span><br><span class="line">        System.out.print(beverage.getDescription() + <span class="string">" $"</span> + beverage.cost());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>但是！</strong> 装饰者模式存在的问题是：<br>采用装饰者在实例化组件时，增加了代码的复杂度，一旦使用装饰者模式，不知需要实例化组件，还需要把组件包装进装饰着中。</p>
+<p>所以，需要<strong>工厂模式</strong>和<strong>生成器模式</strong>的帮助。</p>
+<h1 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h1><p>谈到构造对象，大多数人都会想到new。但是new很明显是面向实现编程。有时候，在实例化具体类的时候，要在运行时一些条件来决定。</p>
+<p>所以如果是new一个具体类，那么一旦加入新的具体类，就必须改变代码，违背了对扩展开放对修改关闭的原则。如下所示：<br><img src="/2020/01/31/head-first-design-pattern/class_build.png" alt="class_build"></p>
+<p>所以，应该“找出变化的方面，把它们从不变的部分分离出来”。 </p>
+<p><img src="/2020/01/31/head-first-design-pattern/class_build2.png" alt="class_build2"></p>
+<p>我们可以用一个新的对象“创建对象的细节。工厂”来处理if…else创建对象的细节。这样这个创建对象的细节就可以被复用。</p>
+<h2 id="认识工厂模式"><a href="#认识工厂模式" class="headerlink" title="认识工厂模式"></a>认识工厂模式</h2><h3 id="简单工厂模式"><a href="#简单工厂模式" class="headerlink" title="简单工厂模式"></a>简单工厂模式</h3><p>简单工厂其实不是一个设计模式，反而更像是一个编程习惯，但经常被使用。</p>
+<p>所谓简单工厂模式就是有一个专门的factory类进行对象构建。需要构建类的时候，只要调用这个factory类即可。</p>
+<p>如下图所示：<br><img src="/2020/01/31/head-first-design-pattern/simple_factory.png" alt="simple_factory"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PizzaStore</span> </span>&#123;</span><br><span class="line">	SimplePizzaFactory simplePizzaFactory;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PizzaStore</span><span class="params">(SimplePizzaFactory simplePizzaFactory)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.simplePizzaFactory = simplePizzaFactory;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Pizza <span class="title">orderPizza</span><span class="params">(String type)</span> </span>&#123;</span><br><span class="line">        Pizza pizza = simplePizzaFactory.createPizza(type);</span><br><span class="line">        pizza.prepare();</span><br><span class="line">        pizza.bake();</span><br><span class="line">        pizza.cut();</span><br><span class="line">        pizza.box();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> pizza;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimplePizzaFactory</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Pizza <span class="title">createPizza</span><span class="params">(String type)</span> </span>&#123;</span><br><span class="line">        Pizza pizza = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="string">"cheese"</span>.equals(type)) &#123;</span><br><span class="line">            pizza = <span class="keyword">new</span> CheesePizza();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"pepperoni"</span>.equals(type))&#123;</span><br><span class="line">            pizza = <span class="keyword">new</span> PepperoniPizza();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> pizza;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这时候，如果有其他pizza店铺的加盟，希望保证加盟店的质量，但是有得考虑区域差异。如何对pizzaStore做进一步的扩充呢？</p>
+<blockquote>
+<p>如果还是在简单工厂的基础上，写出三个不同的工厂NYPizzaFactory，ChicagoPizzaFactory，CaliforniaPizzaFactory, 使得每个加盟地都有适合的工厂可以用。如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NYPizzaFactory nyFactory = <span class="keyword">new</span> NYPizzaFactory();</span><br><span class="line">PizzaStore nyStore = <span class="keyword">new</span> PizzaStore(nyFactory);</span><br><span class="line">nyStore.orderPizza(<span class="string">"Veggie"</span>);</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<p>但是让每个地区都有一个自己的factory对工厂的品质不好控制，所以采用工厂模式吧，把创建对象的方法写在子类里面，被调用。</p>
+<h3 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h3><p>工厂方法模式的核心就是在类中定义工厂方法，用来处理对象的创建，并将这样的行为封装在子类中。这样客户程序中关于超类的代码就和子类对象创建代码解耦了。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">PizzaStore</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> Pizza <span class="title">orderPizza</span><span class="params">(String type)</span> </span>&#123;</span><br><span class="line">		Pizza pizza;</span><br><span class="line"></span><br><span class="line">		pizza = createPizza(type);</span><br><span class="line"></span><br><span class="line">		pizza.prepare();</span><br><span class="line">		pizza.bake();</span><br><span class="line">		pizza.cut();</span><br><span class="line">		pizza.box();</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> pizza;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> Pizza <span class="title">createPizza</span><span class="params">(String type)</span></span>;<span class="comment">//内容类似simplePizzaFactory</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>定义：工厂方法模式（Factory Method Pattern）定义了一个创建对象的接口，但由子类决定要实例化的类是哪一个。工厂方法让类把实例化推迟到子类。</p>
+</blockquote>
+<p>所以，工厂方法模式和简单工厂模式的区别</p>
+<ul>
+<li>简单工厂模式有一个专门的factory类进行对象构建，工厂方法模式是定义一个create的抽象方法，让子类自己实现。</li>
+<li>工厂方法模式可以随时根据子类的需要改变对象构建的方法，但是简单工厂模式必须自己创建一个工厂类。不具备工厂方法的弹性。</li>
+</ul>
+<h3 id="DI依赖注入原则"><a href="#DI依赖注入原则" class="headerlink" title="DI依赖注入原则"></a>DI依赖注入原则</h3><p>然而！！如果一个pizzaStore直接根据type产生对应的pizza对象，那么，这是一个很依赖的Pizza店。<br>因为当你实例化一个对象的时候（也就是new！）就是在依赖它的具体类。一个Pizza店需要create不同的Pizza，所以有着很强的依赖性。</p>
+<p><strong>依赖倒置原则（Dependency Inversion Princile）：要依赖抽象类，不要依赖具体类</strong></p>
+<p>这个原则说明：不能让高层组件依赖低层组件，而且，不管高层或者低层组件，都应该依赖于抽象。</p>
+<p>而用了工厂模式之后，PizzaStore只是依赖于Pizza这个抽象类，而不是具体的接口。由工厂方法（createPizza）来产生具体的类。</p>
+<p>这时候，比萨店的设计变得很棒，具有弹性的框架，而且遵循设计原则。</p>
+<p>但是如果有一个新的需求，不同地方同样的Pizza，所用的原材料虽然都是面粉、酱料、芝士等，但是是不同风味的，如果为不同的店创建不同风味的原材料呢？需要一个<strong>抽象原料工厂</strong></p>
+<h3 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h3><blockquote>
+<p>抽象工厂模式 提供一个接口，用于创建相关或者依赖对象的家族，而不需要明确指定具体类。<br><img src="/2020/01/31/head-first-design-pattern/abstract_factory.png" alt="abstract_factory"></p>
+</blockquote>
+<p>当然，你会发现在抽象工厂中，createDough()也是一种工厂模式的体现。</p>
+<p>工厂模式是提供一个接口产生具体的类，抽象工厂模式是提供一个接口产生一个抽象类。而后由其他类实现该接口，被实际调用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NYPizzaIngredientFactory</span> <span class="keyword">implements</span> <span class="title">PizzaIngredientFactory</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Dough <span class="title">createDough</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> NYDough();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Sauce <span class="title">createSauce</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> NYSauce();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CheesePizza</span> <span class="keyword">extends</span> <span class="title">Pizza</span> </span>&#123;</span><br><span class="line">    PizzaIngredientFactory pizzaIngredientFactory;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CheesePizza</span><span class="params">(PizzaIngredientFactory pizzaIngredientFactory)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.pizzaIngredientFactory = pizzaIngredientFactory;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getDesc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"CheesePizza"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.dough = <span class="keyword">this</span>.pizzaIngredientFactory.createDough();</span><br><span class="line">        <span class="keyword">this</span>.sauce = <span class="keyword">this</span>.pizzaIngredientFactory.createSauce();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Pizza的代码利用相关工厂生产原材料，所生产的原料依赖所使用的工厂。Pizza不关心这些原料，只知道如何制作比萨。</p>
+<p>总结：工厂模式是利用继承，通过继承父类的create方法，产生具体类。让类之间的依赖解耦。只存在在方法里面。<br>而抽象工厂模式就是利用组合，提供一个接口产生抽象类，由子类Factory进行具体的实现，可以将多个类组合。</p>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>所有工厂都是用来封装对象的创建。</li>
+<li>工厂方法使用继承，把对象的创建委托给子类，子类实现工厂方法来创建</li>
+<li>抽象方法使用对象组合，对象的创建被是实现在工厂接口所暴露出来的方法中。</li>
+<li>工厂方法允许类将实例化延迟到子类进行。</li>
+</ul>
+<h1 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h1><p>独一无二的对象。（Singleton)</p>
+<p>比如有些对象：线程池、缓存、对话框等类对象只能有一个实例，如果制造出多个实例，就会导致许多问题。</p>
+<p>如果用全局变量，Java静态变量等，缺点是：必须在程序一开始就创建好对象，万一这个对象非常耗资源，而程序在执行过程中又一直没有用到，就形成了浪费。利用单例模式，可以在需要的时候再创建。</p>
+<h2 id="private-constructor"><a href="#private-constructor" class="headerlink" title="private constructor"></a>private constructor</h2><p>如果不想让外面直接构造某个类对象，可以将类的构造函数设为private，然后写一个内部static类去访问。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span>() </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">MyClass</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> MyClass <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> MyClass()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MyClass myClass = MyClass.getInstance();</span><br></pre></td></tr></table></figure></p>
+<p>那么如何设计使得只能产生唯一的对象呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> Singleton uniqueInstance;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (uniqueInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">			uniqueInstance = <span class="keyword">new</span> Singleton();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> uniqueInstance;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>单例模式：保证一个类只有一个实例，同时提供一个全局指针访问。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>主要实现的思想是创建一个类，同时让它自己manage自己本身单个实例。<br>有一个static的方法，访问private变量，如果变量为null，那么调用private构造类，否则返回private变量。</p>
+<h2 id="多线程的单例模式"><a href="#多线程的单例模式" class="headerlink" title="多线程的单例模式"></a>多线程的单例模式</h2><p>但是如果用多线程的方法，之前的实现可能会造成一个只能装下100ml的水壶，被装了500ml的水。因为可能在多线程的情况下，在还没有instance的时候，getInstance被同时访问，产生多个实例。</p>
+<p>因为是单例，所以多线程在访问的时候，必须要等到其他线程访问结束之后再访问。把getInstance()变成同步，添加<strong>synchronized</strong>所以函数如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> Singleton uniqueInstance;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (uniqueInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">			uniqueInstance = <span class="keyword">new</span> Singleton();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> uniqueInstance;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>但问题是，在getInstance的同步只需要在第一次执行方法时候，一旦设置好uniqueInstance变量，就不再需要同步这个方法了。</p>
+<h3 id="多线曾单例模式方法总览"><a href="#多线曾单例模式方法总览" class="headerlink" title="多线曾单例模式方法总览"></a>多线曾单例模式方法总览</h3><ol>
+<li>所以如果对性能要求不大，毕竟synchronized甚至可能会让性能下降100倍，那么就采用同步getInstance方法，如上。</li>
+<li>如果应用程序总是创建并且使用单件实例，需要经常访问getInstance，<br>并且急切使用Singleton，那么就采用<strong>快速创建法</strong><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> Singleton uniqueInstance = <span class="keyword">new</span> Singleton();</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> uniqueInstance;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//用这个方法可以保证当类被加载的时候，uniqueInstance就被构造。</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li>用“双重检查加锁“，在getInstance()中减少同步使用。</li>
+</ol>
+<p>首先检查实例是否已经被创建了，如果尚未创建，才进行同步。这样依赖，只有第一次会同步。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton uniqueInstance;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (uniqueInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">synchronized</span> (Singleton<span class="class">.<span class="keyword">class</span>) </span>&#123;</span><br><span class="line">				<span class="keyword">if</span> (uniqueInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">					uniqueInstance = <span class="keyword">new</span> Singleton();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> uniqueInstance;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>volatile关键字：确保当uniqueInstance变量被初始化成Singleton实例时，多个线程正确地处理uniqueInstance变量。</p>
+</blockquote>
+<p>因为在多线程中，可能一个语句被多个线程执行，比如 i = i + 1, i初始为1，那么被连个线程同时执行期待结果为2，如果放在高速缓存中，（就是两个线程分别读取i的值放入各自所在地CPU的高速缓存中，然后线程进行1+1的操作，结果就有可能是1.<br>为了解决这个问题，有两种方式：</p>
+<ol>
+<li>在总线上加LOCK地形式，来解决。因为CPU和其他不见及逆行通信都是通过总线来进行的，如果对总线加LOCK的话，也就是阻塞了其他CPU对其他部件的访问（比如内存）。效率低下。</li>
+<li>缓存一致协议。（Intel MESI）保证每个缓存中使用的变量的副本是一致的。也就是说当CPU写数据的时候，如果发现操作的变量是共享变量，那么会发出信号通知其他的CPU将该变量的缓存置为无效状态。</li>
+</ol>
+<h4 id="并发编程中的三个概念"><a href="#并发编程中的三个概念" class="headerlink" title="并发编程中的三个概念"></a>并发编程中的三个概念</h4><ol>
+<li>原子性：即一个操作或者多个操作，要么全部执行并且执行的过程不会被任何因素打断，要么就不执行。</li>
+</ol>
+<p>java中只可以保证直接赋值是有效性的，其他不可以。<br>比如x = 10；而 y = x就无法保证原子性。</p>
+<ol>
+<li>可见性：当做个线程访问一个变量时，一个线程改变了这个变量的值，其他线程能够立刻看到。</li>
+</ol>
+<p>java中提供了<strong>volatile</strong>关键字来保证可见性。当一个共享变量被volatile修饰时，会保证修改的值立刻被更新到内存，而不是高速缓存。当有其他线程需要读取时，会去内存中读取。</p>
+<p>而普通的共享变量不能保证可见性，因为普通共享变量被修改之后，什么时候被写入主存是不确定的，当其他线程去读取时，此时内存中可能还是原来的旧值，因此无法保证可见性。</p>
+<ol>
+<li>有序性。<br>即程序执行的顺序按照代码的先后顺序执行。</li>
+</ol>
+<p>在Java内存模型中，允许编译器和处理器对指令进行重排序，但是重排序过程不会影响到单线程程序的执行，却会影响到多线程并发执行的正确性。</p>
+<p>在Java里面，可以通过volatile关键字来保证一定的“有序性”（具体原理在下一节讲述）。另外可以通过synchronized和Lock来保证有序性，很显然，synchronized和Lock保证每个时刻是有一个线程执行同步代码，相当于是让线程顺序执行同步代码，自然就保证了有序性。</p>
+<h1 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h1><p>封装调用：把方法调用（method invocation）封装起来。</p>
+<p>命令模式的核心就是将动作的发起者和动作的执行者解耦。</p>
+<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>如果有一个遥控器，需要控制房间各个灯的开和关该任何设置？</p>
+<p>封装所有房间的操作为execute接口，在调用的时候，传递对应的房间操作对象，执行对应的execute。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Command</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LightOffCommand</span> <span class="keyword">implements</span> <span class="title">Command</span> </span>&#123;</span><br><span class="line">    Light light;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LightOffCommand</span><span class="params">(Light light)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.light = light;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        light.off();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LightOnCommand</span> <span class="keyword">implements</span> <span class="title">Command</span> </span>&#123;</span><br><span class="line">    Light light;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LightOnCommand</span><span class="params">(Light light)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.light = light;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        light.on();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NoCommand</span> <span class="keyword">implements</span> <span class="title">Command</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"no command!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RemoteControl</span> </span>&#123;</span><br><span class="line">    Command[] onCommands;</span><br><span class="line">    Command[] offCommands;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RemoteControl</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        onCommands = <span class="keyword">new</span> Command[<span class="number">4</span>];</span><br><span class="line">        offCommands = <span class="keyword">new</span> Command[<span class="number">4</span>];</span><br><span class="line">        Command noCommand = <span class="keyword">new</span> NoCommand();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++) &#123;</span><br><span class="line">            onCommands[i] = noCommand;</span><br><span class="line">            offCommands[i] = noCommand;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCommand</span><span class="params">(<span class="keyword">int</span> slot, Command onCommand, Command offCommand)</span> </span>&#123;</span><br><span class="line">        onCommands[slot] = onCommand;</span><br><span class="line">        offCommands[slot] = offCommand;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onButtonWasPushed</span><span class="params">(<span class="keyword">int</span> slot)</span> </span>&#123;</span><br><span class="line">        onCommands[slot].execute();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">offButtonWasPushed</span><span class="params">(<span class="keyword">int</span> slot)</span> </span>&#123;</span><br><span class="line">        offCommands[slot].execute();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>命令模式：将请求封装成对象，可以让你使用不同的请求、队列，或者其他日志请求来参数化其他对象。命令模式也可以支持撤销操作。</li>
+<li>命令模式将发出请求的对象和执行请求的对象解耦。</li>
+<li>在被解耦的两者之间是通过命令对象（Command）进行沟通的，命令对象封装了接收者的一个或者一组动作。</li>
+<li>宏命令是命令的一种简单延申，允许调用多个命令。<blockquote>
+<p>宏命令：是一种批量处理的称谓。一般来说，宏是一种规则或者模式，或者语法替换。</p>
+</blockquote>
+</li>
+</ol>
+<h1 id="适配器与外观模式"><a href="#适配器与外观模式" class="headerlink" title="适配器与外观模式"></a>适配器与外观模式</h1><p>adapter and facade patterns</p>
+<p>适配器模式的目的就是为了包装某些接口使得他们看起来和原来不一样，以适配不同的接口。（就类似接口转换器AC Power adapter）</p>
+<p>比如你已经写了一组API，需要和别人提供的API进行对接，发现出入，这时候就要用到接口模式。<br><img src="/2020/01/31/head-first-design-pattern/adapter_example.png" alt="adapter_example"></p>
+<p>可以写一个类，将你的接口和别人接口进行适配。<br><img src="/2020/01/31/head-first-design-pattern/adapter_example2.png" alt="adapter_example2"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Duck</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">quack</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GreenDuck</span> <span class="keyword">implements</span> <span class="title">Duck</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">quack</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"GreenDuck quack"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"GreenDuck fly"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Turkey</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">gobble</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WildTurkey</span> <span class="keyword">implements</span> <span class="title">Turkey</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">gobble</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"WildTurkey gobble"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"WildTurkey fly"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TurkeyAdapter</span> <span class="keyword">implements</span> <span class="title">Duck</span></span>&#123;</span><br><span class="line">    Turkey turkey;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TurkeyAdapter</span><span class="params">(Turkey turkey)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.turkey = turkey;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">quack</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.turkey.gobble();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fly</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.turkey.fly();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AdapterTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        WildTurkey wildTurkey = <span class="keyword">new</span> WildTurkey();</span><br><span class="line">        Duck turkeyAdapter = <span class="keyword">new</span> TurkeyAdapter(wildTurkey);</span><br><span class="line">        System.out.println(<span class="string">"The turkey is saying..."</span>);</span><br><span class="line">        testDuck(turkeyAdapter);</span><br><span class="line"></span><br><span class="line">        GreenDuck greenDuck = <span class="keyword">new</span> GreenDuck();</span><br><span class="line">        System.out.println(<span class="string">"The duck is saying..."</span>);</span><br><span class="line">        testDuck(greenDuck);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testDuck</span><span class="params">(Duck duck)</span> </span>&#123;</span><br><span class="line">        duck.fly();</span><br><span class="line">        duck.quack();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h2><p>将一个类的接口，转换成客户期望的另一个接口。适配器让原本不兼容的类可以合作无间。<br>同时从上文的代码可以看出，适配器是面对接口编程，而不是实现。</p>
+<h2 id="外观模式"><a href="#外观模式" class="headerlink" title="外观模式"></a>外观模式</h2><blockquote>
+<p>问：一个适配器只能封装一个类么？<br>答：适配器模式的工作是将一个接口转换成另一个接口。如果要让一个适配器包装多个被适配者，就涉及到“外观模式”（facade pattern）。外观模式将一个或者数个类的复杂都隐藏在背后，只露出一个干净美好的外观。<br><img src="/2020/01/31/head-first-design-pattern/patterns.png" alt="patterns"></p>
+</blockquote>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>比如你想要建立自己的家挺影院，你得对不同的设备执行不同的操作（打开爆米花机、调暗灯光、放下屏幕、打开投影仪等等）。此时，如果有了外观模式，通过实现一个提供更合理的接口的外观类，可以将许多个子系统统一操作，变得容易使用。如下图所示:<br><img src="/2020/01/31/head-first-design-pattern/facade.png" alt="facade"></p>
+<h3 id="总结-3"><a href="#总结-3" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>适配器的意图是：“改变”接口符合客户的期望。</li>
+<li>外观模式的意图是：提供子系统的一个简化接口。</li>
+</ul>
+<h3 id="最少知识原则"><a href="#最少知识原则" class="headerlink" title="最少知识原则"></a>最少知识原则</h3><p>外观模式符合一个新的原则：<strong>最少知识原则：减少对象之间的交互，只留下几个密友</strong>。意味着当你在设计一个系统的时候，不管是任何对象，都要注意它所交互的类有哪些，并注意如何与这些类交互的，不要让太多类耦合在一起。</p>
+<p>在一个对象的方法内，我们应该只调用以下范围的方法：</p>
+<ul>
+<li>该对象本身</li>
+<li>被当作方法的参数而传进来的对象</li>
+<li>该方法所创建或者实例化的任何对象</li>
+<li>对象的任何组件<br>也就是说，我们不能用调用一个方法返回的对象的方法：<br><img src="/2020/01/31/head-first-design-pattern/least_friend.png" alt="least_friend"><br><img src="/2020/01/31/head-first-design-pattern/least_friend2.png" alt="least_friend2"></li>
+</ul>
+<h1 id="模板方法模式"><a href="#模板方法模式" class="headerlink" title="模板方法模式"></a>模板方法模式</h1><h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>比如冲泡咖啡和茶的流程类似，都是将水煮沸、打开茶/咖啡包，倒入杯中，添加柠檬/牛奶和糖，那么在实现的时候，如果单独实现咖啡和茶两个类，就出现了代码重复。</p>
+<p>所以最好的方法就是有一个抽象类，抽象出一致的代码（整体的步骤），然后由咖啡和茶的子类对各自独特的方法进行实现。如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">CaffeineBeverage</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="keyword">final</span> <span class="title">prepareRecipe</span><span class="params">()</span> </span>&#123; <span class="comment">//被声明为final以免子类改变算法的顺序</span></span><br><span class="line">		boilWater();</span><br><span class="line">		brew();</span><br><span class="line">		pourInCup();</span><br><span class="line">		addCondiments();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">brew</span><span class="params">()</span></span>; <span class="comment">//需要子类自己实现</span></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">addCondiments</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">boilWater</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// implements</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">pourInCup</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// implements</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>模板方法定义了一个算法的步骤，并允许子类为一个或多个步骤提供实现。固定子类的算法流程，但是只专注在算法本身，而由子类提供完整的实现。可以将代码的复用最大化。</p>
+</blockquote>
+<p>总之，模板就是要给方法，将算法定义成一组步骤，其中的任何步骤都可以是抽象的，由子类负责实现。</p>
+<h2 id="hook"><a href="#hook" class="headerlink" title="hook"></a>hook</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractClass</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">templateMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		primitiveOperation1();</span><br><span class="line">		primitiveOperation2();</span><br><span class="line">		concreteOperation();</span><br><span class="line">		hook();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">primitiveOperation1</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">primitiveOperation2</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">concreteOperation</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// 具体实现</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">hook</span><span class="params">()</span> </span>&#123;&#125; <span class="comment">//这是一个具体的方法，但是它什么事情都不做。被称为“hook”（钩子），子类可以视情况决定要不要覆盖他们。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>钩子：是一种被声明在抽象类中的方法，但只有空的或者默认的实现。钩子的存在，可以让子类由能力对算法的不同点进行挂钩。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">CaffeineBeverageWithHook</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">prepareRecipe</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		boilWater();</span><br><span class="line">		brew();</span><br><span class="line">		pourInCup();</span><br><span class="line">		<span class="keyword">if</span> (customerWantsCondiments()) &#123;<span class="comment">//加上了一个条件句</span></span><br><span class="line">			addCondiments();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">brew</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">addCondiments</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">boilWater</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">//implements</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">pourInCup</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">//implements</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">boolean</span> <span class="title">customerWantsCondiments</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>; <span class="comment">//这个方法就是一个hook，通常是缺省的实现，只返回true。子类可以选择性地覆盖这个方法。</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><blockquote>
+<p>问： 创建一个模板方法地时候，如何决定使用抽象类或者钩子？<br>答： 如果子类必须提供算法中地某个方法或者步骤的实现，就用<strong>抽象方法</strong>。如果算法的这个部分是可选的，就用<strong>钩子</strong>。</p>
+<p>问： 使用钩子的真正目的是？<br>答： 可以让子类实现算法中可选的部分。</p>
+</blockquote>
+<h2 id="总结-4"><a href="#总结-4" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>模板方法模式：在一个方法中定义一个算法的股价，而将一些步骤延迟到子类。使得子类可以在不改变算法结构i的情况下，重新定义算法中的某些步骤。</li>
+<li>模板方法的抽象类可以定义具体方法、抽象方法和钩子</li>
+<li>抽象方法由子类实现</li>
+<li>钩子是一种方法， 它在抽象类中不做事，或者只做默认的事情，子类可以选择要不要去覆盖它。</li>
+<li></li>
+</ul>
+<h1 id="迭代器模式"><a href="#迭代器模式" class="headerlink" title="迭代器模式"></a>迭代器模式</h1><blockquote>
+<p>管理良好的集合：如何遍历集合对象，但是不去管具体的数据结构。</p>
+</blockquote>
+<h2 id="问题引入"><a href="#问题引入" class="headerlink" title="问题引入"></a>问题引入</h2><p>如果有两个餐厅A和B，A餐厅用ArrayList保存菜单，B餐厅用数组保存菜单，那么如果将两份菜谱合并，那么遍历菜单就需要用两种不同的遍历方式。<br>那么是否有一种方法可以让A、B餐厅不改变自身保存菜单的方式，又可以达到高效的遍历？</p>
+<h2 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h2><p>让AB餐厅的菜单实现相同的接口。<br>原始的遍历方式：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//A餐厅</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; AItems.size(); i++) &#123;</span><br><span class="line">	MenuItem menuItem = (MenuItem)AItems.get(i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//B餐厅</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; BItems.length; i++) &#123;</span><br><span class="line">	MenuItem menuItem = (MenuItem)AItems[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>所以此时需要A和B餐厅分别创建一个迭代器（createInterator），让A和B餐厅都同时实现对应的接口。这样就可以被无差别调用。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DinerMenuIterator</span> <span class="keyword">implements</span> <span class="title">Iterator</span></span>&#123;</span><br><span class="line">    String[] items;</span><br><span class="line">    <span class="keyword">int</span> position = -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DinerMenuIterator</span><span class="params">(String[] items)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.items = items;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (position &gt;= items.length - <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (hasNext()) &#123;</span><br><span class="line">            position += <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">return</span> items[position];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (position &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException (<span class="string">"You can not remove an item until you've done at least one next()"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (items[position] != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = position; i &lt; items.length; i++) &#123;</span><br><span class="line">                items[i] = items[i + <span class="number">1</span>];</span><br><span class="line">            &#125;</span><br><span class="line">            items[items.length-<span class="number">1</span>] = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DinerMenu</span> <span class="keyword">implements</span> <span class="title">Menu</span></span>&#123;</span><br><span class="line">    String[] menuItems;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DinerMenu</span><span class="params">(String[] menuItems)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.menuItems = menuItems;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Iterator <span class="title">createIterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DinerMenuIterator(menuItems);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="单一责任"><a href="#单一责任" class="headerlink" title="单一责任"></a>单一责任</h2><p>类的每个责任都有改变潜在区域，超过一个责任，意味着超过一个改变的区域。<br>所以必须尽量让每个类都保持单一责任。</p>
+<h2 id="总结-5"><a href="#总结-5" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>迭代器允许访问聚合的元素，而不需要暴露内部结构</li>
+<li>迭代器将遍历聚合的工作封装进一个对象中</li>
+<li>当使用迭代器时，我们依赖聚合提供遍历</li>
+<li>努力让一个类只分配一个责任。</li>
+</ul>
+<h1 id="组合模式"><a href="#组合模式" class="headerlink" title="组合模式"></a>组合模式</h1><h2 id="问题引入-1"><a href="#问题引入-1" class="headerlink" title="问题引入"></a>问题引入</h2><p>对于waitress，如果要得到每个餐厅的菜单，就得传入所有餐厅的menu，得到对应的iterator，逐个遍历。如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Waitress</span> </span>&#123;</span><br><span class="line">    Menu dinerMenu;</span><br><span class="line">    Menu breakfastMenu;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Waitress</span><span class="params">(Menu breakfastMenu, Menu dinerMenu)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.dinerMenu = dinerMenu;</span><br><span class="line">        <span class="keyword">this</span>.breakfastMenu = breakfastMenu;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">printMenu</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Iterator breakfastMenuIterator = breakfastMenu.createIterator();</span><br><span class="line">        Iterator dinnerMenuIterator = dinerMenu.createIterator();</span><br><span class="line">        traverseMenu(breakfastMenuIterator);</span><br><span class="line">        <span class="keyword">this</span>.traverseMenu(dinnerMenuIterator);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">traverseMenu</span><span class="params">(Iterator menuIterator)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (menuIterator.hasNext()) &#123;</span><br><span class="line">            String item = (String)menuIterator.next();</span><br><span class="line">            System.out.println(item);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>是否有什么方式可以快速遍历所有的菜单，又能分别遍历不同餐厅的菜单呢？</p>
+<ul>
+<li>我们需要某种树形结构，可以容纳菜单、子菜单和菜单项<br>这时候需要使用组合模式。<blockquote>
+<p>组合模式允许将对象组合成树形结构来表现“整体/部分”层次结构。组合能让客户以一致的方式处理个别对象以及对象组合。</p>
+</blockquote>
+</li>
+</ul>
+<p>![compose]compose.png<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">MenuComponent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(MenuComponent menuComponent)</span> </span>&#123;<span class="comment">//如果是叶子节点（某样菜），没有该操作</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">(MenuComponent menuComponent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MenuComponent <span class="title">getChild</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;<span class="comment">//如果是非叶子节点（菜单或者菜单集合），没有该操作</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isVegetarian</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MenuItem</span> <span class="keyword">extends</span> <span class="title">MenuComponent</span> </span>&#123;</span><br><span class="line">    String name;</span><br><span class="line">    <span class="keyword">boolean</span> vegetarian;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MenuItem</span><span class="params">(String name, <span class="keyword">boolean</span> vegetarian)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.vegetarian = vegetarian;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isVegetarian</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> vegetarian;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(getName());</span><br><span class="line">        <span class="keyword">if</span> (isVegetarian()) &#123;</span><br><span class="line">            System.out.println(<span class="string">"v"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Menu</span> <span class="keyword">extends</span> <span class="title">MenuComponent</span> </span>&#123;</span><br><span class="line">    String name;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Menu</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    ArrayList&lt;MenuComponent&gt; menuComponents = <span class="keyword">new</span> ArrayList&lt;MenuComponent&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(MenuComponent menuComponent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.menuComponents.add(menuComponent);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">(MenuComponent menuComponent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.menuComponents.remove(menuComponent);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> MenuComponent <span class="title">getChild</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (MenuComponent)menuComponents.get(i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(getName());</span><br><span class="line">        Iterator iterator = menuComponents.iterator();</span><br><span class="line">        <span class="keyword">while</span> (iterator.hasNext()) &#123;</span><br><span class="line">            MenuComponent menuComponent = (MenuComponent) iterator.next();</span><br><span class="line">            menuComponent.print();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Waitress</span> </span>&#123;</span><br><span class="line">    MenuComponent allMenus;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Waitress</span><span class="params">(MenuComponent allMenus)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.allMenus = allMenus;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        allMenus.print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ComponentTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MenuComponent milk = <span class="keyword">new</span> MenuItem(<span class="string">"milk"</span>, <span class="keyword">false</span>);</span><br><span class="line">        MenuComponent egg = <span class="keyword">new</span> MenuItem(<span class="string">"egg"</span>, <span class="keyword">false</span>);</span><br><span class="line">        MenuComponent cabbage = <span class="keyword">new</span> MenuItem(<span class="string">"cabbage"</span>, <span class="keyword">true</span>);</span><br><span class="line">        MenuComponent chicken = <span class="keyword">new</span> MenuItem(<span class="string">"chicken"</span>, <span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">        MenuComponent breakfastMenu = <span class="keyword">new</span> Menu(<span class="string">"breakfast menu"</span>);</span><br><span class="line">        breakfastMenu.add(milk);</span><br><span class="line">        breakfastMenu.add(egg);</span><br><span class="line"></span><br><span class="line">        MenuComponent dinnerMenu = <span class="keyword">new</span> Menu(<span class="string">"dinner menu"</span>);</span><br><span class="line">        dinnerMenu.add(cabbage);</span><br><span class="line">        dinnerMenu.add(chicken);</span><br><span class="line"></span><br><span class="line">        MenuComponent allmenu = <span class="keyword">new</span> Menu(<span class="string">"total menu"</span>);</span><br><span class="line">        allmenu.add(dinnerMenu);</span><br><span class="line">        allmenu.add(breakfastMenu);</span><br><span class="line"></span><br><span class="line">        Waitress waitress = <span class="keyword">new</span> Waitress(allmenu);</span><br><span class="line">        waitress.print();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结-6"><a href="#总结-6" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>组合模式提供一种模式，可以同时包容个别对象和和组合对象。</li>
+<li>组合结构内的任意对象称为组件，组件可以是组合也可以是叶节点。</li>
+<li>在实现组合模式时，有许多设计上的折衷，需要根据平衡透明性和安全性进行判断。</li>
+</ul>
+<h1 id="状态模式"><a href="#状态模式" class="headerlink" title="状态模式"></a>状态模式</h1><p>记录对象当前的状态，从而控制对象的行为（类似自动机）</p>
+<h2 id="问题引入-2"><a href="#问题引入-2" class="headerlink" title="问题引入"></a>问题引入</h2><p>一个自动售货机，有 “无硬币，有硬币，售出饮料，售罄” 等状态，如何去实现这样一个自动售货机？<br>![state]state.png</p>
+<p>如果只是简单记录状态，根据不同的变化条件跳转状态的话（以条件为准定义insertQuater(),ejectQuater(),turnCrank()函数），一旦有新增的状态，代码需要变更地方大，难以维护。</p>
+<p>所以应该为每个状态新建一个类，每个类中实现状态对应的条件跳转即可。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GumballMachine</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    State soldOutState;</span><br><span class="line">    State noQuarterState;</span><br><span class="line">    State hasQuarterState;</span><br><span class="line">    State soldState;</span><br><span class="line"></span><br><span class="line">    State state = soldOutState;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GumballMachine</span><span class="params">(<span class="keyword">int</span> count)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.count = count;</span><br><span class="line">        <span class="keyword">this</span>.soldOutState = <span class="keyword">new</span> SoldOutState(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">this</span>.noQuarterState = <span class="keyword">new</span> NoQuarterState(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">this</span>.hasQuarterState = <span class="keyword">new</span> HasQuarterState(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">this</span>.soldState = <span class="keyword">new</span> SoldState(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertQuarter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        state.insertQuarter();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ejectQuarter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        state.ejectQuarter();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">turnCrank</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        state.turnCrank();</span><br><span class="line">        state.dispense();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setState</span><span class="params">(State state)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.state = state;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">releaseBall</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"A gumball comes rolling out the slot"</span>);</span><br><span class="line">        <span class="keyword">if</span>(count != <span class="number">0</span>) &#123;</span><br><span class="line">            count = count - <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> State <span class="title">getSoldOutState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.soldOutState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> State <span class="title">getNoQuarterState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.noQuarterState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> State <span class="title">getHasQuarterState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.hasQuarterState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> State <span class="title">getSoldState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.hasQuarterState;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//////</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HasQuarterState</span> <span class="keyword">implements</span> <span class="title">State</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    GumballMachine gumballMachine;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HasQuarterState</span><span class="params">(GumballMachine gumballMachine)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.gumballMachine = gumballMachine;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertQuarter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"You can't insert quarter again"</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ejectQuarter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"quarter returned"</span>);</span><br><span class="line">        gumballMachine.setState(gumballMachine.getNoQuarterState());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">turnCrank</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"turn crank"</span>);</span><br><span class="line">        gumballMachine.setState(gumballMachine.getSoldState());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dispense</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"No gumball dispensed."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>以上做法的好处是：</p>
+<ul>
+<li>将每个状态的行为局部化自己的类中</li>
+<li>将容易产生问题的if语句删除</li>
+<li>让每个状态“对修改关闭”，对”扩展开放”</li>
+</ul>
+<blockquote>
+<p>状态模式将状态封装成独立的类，并将动作委托到代表当前状态的对象。允许对象在内部状态改变时，看起来好像修改了它的类。</p>
+</blockquote>
+<h1 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h1><h2 id="问题引入-3"><a href="#问题引入-3" class="headerlink" title="问题引入"></a>问题引入</h2><p>还是上一章提到的糖果机，如果需要写一个监视器，监控糖果机的状态、地点等因素，且监视器和糖果机不在同一个JVM上，该怎么办？</p>
+<p>这时候在监视器上就需要用到远程代理，假装是真正的糖果机，但其实是利用网络和一个远程的糖果机沟通。<br>![agent]agent.png</p>
+<h2 id="Java-RMI"><a href="#Java-RMI" class="headerlink" title="Java RMI"></a>Java RMI</h2><p>RMI将客户辅助对象称为stub（桩），服务辅助对象称为skeleton（骨架）。</p>
+<h2 id="定义代理模式"><a href="#定义代理模式" class="headerlink" title="定义代理模式"></a>定义代理模式</h2><blockquote>
+<p>代理模式为另一个对象提供要给替身或者占位符以控制对这个对象的访问。远程代理是一般代理的一种实现。</p>
+<ul>
+<li>远程代理控制访问远程对象</li>
+<li>虚拟代理控制访问创建开销大的资源</li>
+<li>保护代理基于权限控制对资源的访问。</li>
+</ul>
+</blockquote>
+<h1 id="复合模式"><a href="#复合模式" class="headerlink" title="复合模式"></a>复合模式</h1><p>复合模式（Compound Pattern）在一个解决方案中结合两个或者多个模式，以解决一般或者重复发生的问题。</p>
+<h1 id="与设计模式相处"><a href="#与设计模式相处" class="headerlink" title="与设计模式相处"></a>与设计模式相处</h1><h1 id="设计原则"><a href="#设计原则" class="headerlink" title="设计原则"></a>设计原则</h1><ul>
+<li>找出应用中可能需要变化之处，把它们独立出来，不要和那些不需要变化的代码混在一起。</li>
+<li>针对接口编程，而不是针对实现编程。</li>
+<li>为了交互对象之间的松耦合设计而努力。</li>
+<li>多用组合，少用继承。</li>
+<li>类应该对扩展开放，对修改关闭。</li>
+<li>最少只是原则：减少对象之间的交互，只留下几个密友。</li>
+<li>好莱坞原则：将决策权放在高层，以便决定和以及何时调用低层模块（模板方法模式）</li>
+<li>单一责任原则：一个类应该只有一个引起变化的原因（也就是尽量让每个类保持单一责任，高内聚）</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/technique/" rel="tag"># technique</a>
+              <a href="/tags/book/" rel="tag"># book</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/31/create-own-blog/" rel="prev" title="创建属于你自己的博客吧~">
+      <i class="fa fa-chevron-left"></i> 创建属于你自己的博客吧~
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#欢迎来到设计模式的世界"><span class="nav-number">1.</span> <span class="nav-text">欢迎来到设计模式的世界</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实际问题"><span class="nav-number">1.1.</span> <span class="nav-text">实际问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方法"><span class="nav-number">1.2.</span> <span class="nav-text">解决方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现鸭子的行为"><span class="nav-number">1.3.</span> <span class="nav-text">实现鸭子的行为</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#观察者模式"><span class="nav-number">2.</span> <span class="nav-text">观察者模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实际问题-1"><span class="nav-number">2.1.</span> <span class="nav-text">实际问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">2.2.</span> <span class="nav-text">解决方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#认识观察者模式"><span class="nav-number">2.3.</span> <span class="nav-text">认识观察者模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#松耦合的威力"><span class="nav-number">2.4.</span> <span class="nav-text">松耦合的威力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可插拔"><span class="nav-number">2.5.</span> <span class="nav-text">可插拔</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.6.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#装饰者模式"><span class="nav-number">3.</span> <span class="nav-text">装饰者模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#继承泛滥的问题"><span class="nav-number">3.1.</span> <span class="nav-text">继承泛滥的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#认识装饰者模式"><span class="nav-number">3.2.</span> <span class="nav-text">认识装饰者模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#工厂模式"><span class="nav-number">4.</span> <span class="nav-text">工厂模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#认识工厂模式"><span class="nav-number">4.1.</span> <span class="nav-text">认识工厂模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单工厂模式"><span class="nav-number">4.1.1.</span> <span class="nav-text">简单工厂模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工厂方法模式"><span class="nav-number">4.1.2.</span> <span class="nav-text">工厂方法模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DI依赖注入原则"><span class="nav-number">4.1.3.</span> <span class="nav-text">DI依赖注入原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抽象工厂模式"><span class="nav-number">4.1.4.</span> <span class="nav-text">抽象工厂模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结-1"><span class="nav-number">4.2.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#单例模式"><span class="nav-number">5.</span> <span class="nav-text">单例模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#private-constructor"><span class="nav-number">5.1.</span> <span class="nav-text">private constructor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">5.2.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">5.3.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程的单例模式"><span class="nav-number">5.4.</span> <span class="nav-text">多线程的单例模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多线曾单例模式方法总览"><span class="nav-number">5.4.1.</span> <span class="nav-text">多线曾单例模式方法总览</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#并发编程中的三个概念"><span class="nav-number">5.4.1.1.</span> <span class="nav-text">并发编程中的三个概念</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命令模式"><span class="nav-number">6.</span> <span class="nav-text">命令模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#场景"><span class="nav-number">6.1.</span> <span class="nav-text">场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结-2"><span class="nav-number">6.2.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#适配器与外观模式"><span class="nav-number">7.</span> <span class="nav-text">适配器与外观模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#适配器模式"><span class="nav-number">7.1.</span> <span class="nav-text">适配器模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#外观模式"><span class="nav-number">7.2.</span> <span class="nav-text">外观模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">7.2.1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结-3"><span class="nav-number">7.2.2.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最少知识原则"><span class="nav-number">7.2.3.</span> <span class="nav-text">最少知识原则</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模板方法模式"><span class="nav-number">8.</span> <span class="nav-text">模板方法模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题描述"><span class="nav-number">8.1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hook"><span class="nav-number">8.2.</span> <span class="nav-text">hook</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Q-amp-A"><span class="nav-number">8.3.</span> <span class="nav-text">Q&amp;A</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结-4"><span class="nav-number">8.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#迭代器模式"><span class="nav-number">9.</span> <span class="nav-text">迭代器模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题引入"><span class="nav-number">9.1.</span> <span class="nav-text">问题引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方式"><span class="nav-number">9.2.</span> <span class="nav-text">解决方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单一责任"><span class="nav-number">9.3.</span> <span class="nav-text">单一责任</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结-5"><span class="nav-number">9.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#组合模式"><span class="nav-number">10.</span> <span class="nav-text">组合模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题引入-1"><span class="nav-number">10.1.</span> <span class="nav-text">问题引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结-6"><span class="nav-number">10.2.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#状态模式"><span class="nav-number">11.</span> <span class="nav-text">状态模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题引入-2"><span class="nav-number">11.1.</span> <span class="nav-text">问题引入</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代理模式"><span class="nav-number">12.</span> <span class="nav-text">代理模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题引入-3"><span class="nav-number">12.1.</span> <span class="nav-text">问题引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-RMI"><span class="nav-number">12.2.</span> <span class="nav-text">Java RMI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义代理模式"><span class="nav-number">12.3.</span> <span class="nav-text">定义代理模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#复合模式"><span class="nav-number">13.</span> <span class="nav-text">复合模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#与设计模式相处"><span class="nav-number">14.</span> <span class="nav-text">与设计模式相处</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#设计原则"><span class="nav-number">15.</span> <span class="nav-text">设计原则</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">jessie</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jessie</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.getAttribute('pjax') !== null) {
+      script.setAttribute('pjax', '');
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+  
+
+    </div>
+</body>
+</html>
